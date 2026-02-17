@@ -1,0 +1,23 @@
+package com.billy.inventory.config.kafka;
+
+import com.billy.inventory.adapters.out.message.SaleMessage;
+import org.apache.kafka.common.errors.SerializationException;
+import org.apache.kafka.common.serialization.Serializer;
+import tools.jackson.databind.ObjectMapper;
+
+public class CustomSerializer implements Serializer<SaleMessage> {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public byte[] serialize(String s, SaleMessage saleMessage) {
+        try {
+            if (saleMessage == null) {
+                return null;
+            }
+            return objectMapper.writeValueAsBytes(saleMessage);
+        } catch (Exception e) {
+            throw new SerializationException("Error when serializing SaleMessage to byte[]");
+        }
+    }
+}
