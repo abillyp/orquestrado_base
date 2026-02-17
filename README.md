@@ -41,25 +41,27 @@ Docker Desktop
 
 ```
 
+# Saga Orchestration Microservices
+
 Fluxo:
 
-```
-Client → orchestrator-service
-            ↓
-         Kafka
-     ↓       ↓
-inventory   payment
-     ↓       ↓
-     ← status/eventos →
-            ↓
-       orchestrator
+Client → orchestrator-service  
+↓  
+Kafka  
+↓ ↓  
+inventory payment  
+↓ ↓  
+← status/eventos →  
+↓  
+orchestrator  
+
+---
 
 # Arquitetura Saga Orchestration
 
-![Saga Orchestration Diagram](https://raw.githubusercontent.com/abillp/orquestrado_base/main/docs/images/saga-orchestration.png)
+![Saga Orchestration Diagram](docs/images/saga-orchestration.png)
 
-
-----------
+---
 
 # Estrutura do projeto
 
