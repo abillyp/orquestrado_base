@@ -1,74 +1,67 @@
-﻿
-# Saga Orchestration Microservices — Local Environment (Docker Desktop)
-
-Este projeto implementa uma arquitetura de microserviços com **Saga Orchestration** usando:
-
--   Java 25
-    
--   Spring Boot
-    
--   Maven
-    
--   Apache Kafka
-    
--   MySQL
-    
--   Docker Desktop
-    
--   Docker Compose
-    
-
-Todo o ambiente roda **100% local**, sem Kubernetes.
-
-----------
-
-# Arquitetura
-
-```
-Docker Desktop
-│
-├── orchestrator-service (8085)
-│        │
-│        ├── envia eventos →
-│        │
-├── sale-service (8081)
-├── inventory-service (8082)
-├── payment-service (8083)
-│
-├── Kafka (9092)
-│
-└── MySQL (3306)
-
-```
-
 # Saga Orchestration Microservices
 
-Fluxo:
+[![Java](https://img.shields.io/badge/Java-25-orange)]()
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen)]()
+[![Docker](https://img.shields.io/badge/Docker-Enabled-blue)]()
+[![Kafka](https://img.shields.io/badge/Apache-Kafka-black)]()
+[![MySQL](https://img.shields.io/badge/MySQL-8-blue)]()
 
-Client → orchestrator-service  
-↓  
-Kafka  
-↓ ↓  
-inventory payment  
-↓ ↓  
-← status/eventos →  
-↓  
-orchestrator  
+Projeto demonstrando uma arquitetura de microserviços utilizando o padrão **Saga Orchestration**, com comunicação assíncrona via Kafka.
 
 ---
 
-# Arquitetura Saga Orchestration
+# Arquitetura
 
 ![Saga Orchestration Diagram](docs/images/saga-orchestration.png)
 
 ---
 
-# Estrutura do projeto
+# Visão Geral
+
+Este sistema simula um fluxo de processamento de pedidos com os seguintes serviços:
+
+* **orchestrator-service** → coordena a Saga
+* **sale-service** → inicia o pedido
+* **inventory-service** → reserva estoque
+* **payment-service** → processa pagamento
+* **Kafka** → comunicação assíncrona entre serviços
+* **MySQL** → persistência dos dados
+
+---
+
+# Fluxo da Saga
+
+1. Orchestrator inicia o pedido
+2. Inventory Service reserva o estoque
+3. Payment Service processa o pagamento
+4. Se sucesso → pedido concluído
+5. Se falha → compensação executada
+
+---
+
+# Stack Tecnológica
+
+* Java 25
+* Spring Boot
+* Maven
+* Apache Kafka
+* MySQL 8
+* Docker
+* Docker Compose
+
+---
+
+# Estrutura do Projeto
 
 ```
-my-orchestration/
+orquestrado_base/
 │
 ├── docker-compose.yml
+├── README.md
+│
+├── docs/
+│   └── images/
+│       └── saga-orchestration.png
 │
 ├── docker/
 │   └── mysql/
@@ -76,337 +69,81 @@ my-orchestration/
 │           └── 01-init.sql
 │
 ├── services/
+│   ├── orchestrator-service/
 │   ├── sale-service/
-│   │   ├── Dockerfile
-│   │   ├── pom.xml
-│   │   └── src/
-│   │
 │   ├── inventory-service/
-│   ├── payment-service/
-│   └── orchestrator-service/
-│
-└── README.md
-
+│   └── payment-service/
 ```
 
-----------
+---
 
-# Pré-requisitos
+# Como Executar
 
-Instalar:
+## Pré-requisitos
 
--   Docker Desktop
-    
--   Java 25 (opcional, apenas para rodar fora do Docker)
-    
--   Maven (opcional)
-    
+* Docker Desktop instalado
 
-Verificar Docker:
+---
 
-```bash
-docker --version
-docker compose version
-
-```
-
-----------
-
-# Como iniciar o ambiente
-
-Na raiz do projeto:
+## Subir ambiente completo
 
 ```bash
 docker compose up -d --build
-
 ```
 
-Isso irá subir:
+---
 
--   MySQL
-    
--   Kafka
-    
--   Zookeeper
-    
--   sale-service
-    
--   inventory-service
-    
--   payment-service
-    
--   orchestrator-service
-    
-
-----------
-
-# Verificar containers
+## Verificar containers
 
 ```bash
 docker compose ps
-
 ```
 
-Exemplo:
+---
 
-```
-NAME                     STATUS
-db                       running
-kafka                    running
-sale-service             running
-inventory-service        running
-payment-service          running
-orchestrator-service     running
-
-```
-
-----------
-
-# Ver logs
-
-Exemplo:
+## Ver logs
 
 ```bash
 docker compose logs -f orchestrator-service
-
 ```
 
-ou
+---
 
-```bash
-docker compose logs -f payment-service
+# Portas
 
-```
+| Serviço              | Porta |
+| -------------------- | ----- |
+| orchestrator-service | 8085  |
+| sale-service         | 8081  |
+| inventory-service    | 8082  |
+| payment-service      | 8083  |
+| Kafka                | 9092  |
+| MySQL                | 3306  |
 
-----------
+---
 
-# Parar o ambiente
+# Banco de Dados
 
-```bash
-docker compose down
+Bancos criados automaticamente:
 
-```
+* saga_sale
+* saga_inventory
+* saga_payment
 
-Remover volumes também:
+---
 
-```bash
-docker compose down -v
+# Objetivo
 
-```
+Este projeto demonstra:
 
-----------
+* Saga Pattern (Orchestration)
+* Arquitetura orientada a eventos
+* Comunicação assíncrona
+* Microservices architecture
+* Integração com Kafka
 
-# Banco de dados
-
-Os bancos são criados automaticamente pelo script:
-
-```
-docker/mysql/init/01-init.sql
-
-```
-
-Bancos criados:
-
-```
-saga_sale
-saga_inventory
-saga_payment
-
-```
-
-Conectar manualmente:
-
-```bash
-docker exec -it <mysql-container> mysql -u root -p
-
-```
-
-Senha:
-
-```
-example
-
-```
-
-----------
-
-# Portas dos serviços
-
-Serviço
-
-Porta
-
-orchestrator-service
-
-8085
-
-sale-service
-
-8081
-
-inventory-service
-
-8082
-
-payment-service
-
-8083
-
-Kafka
-
-9092
-
-MySQL
-
-3306
-
-----------
-
-# Acessar serviços
-
-Exemplos:
-
-```
-http://localhost:8085
-http://localhost:8081
-http://localhost:8082
-http://localhost:8083
-
-```
-
-----------
-
-# Comunicação entre serviços
-
-Dentro do Docker:
-
-MySQL:
-
-```
-db:3306
-
-```
-
-Kafka:
-
-```
-kafka:29092
-
-```
-
-Nunca usar:
-
-```
-localhost
-
-```
-
-----------
-
-# Build manual de um serviço
-
-Exemplo:
-
-```bash
-cd services/payment-service
-
-docker build -t payment-service .
-
-```
-
-----------
-
-# Reiniciar um serviço
-
-```bash
-docker compose restart payment-service
-
-```
-
-----------
-
-# Troubleshooting
-
-## Serviço não sobe
-
-Ver logs:
-
-```bash
-docker compose logs -f payment-service
-
-```
-
-----------
-
-## MySQL não conecta
-
-Verificar container:
-
-```bash
-docker compose ps
-
-```
-
-----------
-
-## Kafka não conecta
-
-Verificar:
-
-```bash
-docker compose logs kafka
-
-```
-
-----------
-
-## Rebuild completo
-
-```bash
-docker compose down -v
-
-docker compose up -d --build
-
-```
-
-----------
-
-# Tecnologias utilizadas
-
--   Java 25
-    
--   Spring Boot
-    
--   Maven
-    
--   Apache Kafka
-    
--   MySQL 8
-    
--   Docker
-    
--   Docker Compose
-    
-
-----------
-
-# Objetivo do projeto
-
-Demonstrar uma arquitetura baseada em:
-
--   Saga Pattern
-    
--   Event-driven architecture
-    
--   Microservices
-    
--   Orchestration-based Saga
-    
--   Comunicação assíncrona com Kafka
-    
-
-----------
+---
 
 # Autor
 
-Projeto de estudo e arquitetura de microserviços com Saga Orchestration.
+Projeto de estudo e demonstração de arquitetura de microserviços.
