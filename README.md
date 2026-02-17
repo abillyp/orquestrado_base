@@ -56,7 +56,9 @@ inventory   payment
 
 # Arquitetura Saga Orchestration
 
-![Saga Orchestration Diagram](docs/images/saga-orchestration.png)
+<p align="center">
+  <img src="docs/images/saga-orchestration.png" width="800" alt="Saga Orchestration Diagram"/>
+</p>
 
 
 ----------
